@@ -1,0 +1,63 @@
+
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(sciplot)
+> library(ez)
+> library(psych)
+> library(reshape)
+> library(ggplot2)
+> 
+> source("lrheatmap.R") # load custom functions
+> source("TMSP.R") # load custom functions
+> 
+> args <- commandArgs(trailingOnly = TRUE)
+> #print(args)
+> 
+> xtiles <- as.integer(args[1])
+> ytiles <- as.integer(args[2])
+> print(sprintf("xtiles = %d, ytiles = %d\n",xtiles,ytiles))
+[1] "xtiles = 4, ytiles = 2\n"
+> 
+> M <- zeroTM(xtiles,ytiles)
+[1] "AOIs:\n"
+[1] "zeroTM: nrow x ncol: 8 x 8"
+> 
+> df <- read.csv("aois.csv") # open data
+> 
+> ddf <- df[which(df$cond == "p1"), ] # select condition
+> ddf
+[1] subj     cond     AOI      duration order   
+<0 rows> (or 0-length row.names)
+> M_p1 <- TransMatrix(M,data=ddf,
++                     AOInamesVar="AOI",
++                     SubjectsVar="subj",
++                     FixOrderVar="order")
+[1] "Warnings: "
+[1] "No AOI transitions for subject: NA"
+[1] "Warnings: "
+character(0)
+> M_p1 <- M
+> en_p1 <- TransEntropy(M,data=ddf,
++                     AOInamesVar="AOI",
++                     SubjectsVar="subj",
++                     FixOrderVar="order")
+[1] "Warnings: "
+[1] "No AOI transitions for subject: NA"
+[1] "Warnings: "
+character(0)
