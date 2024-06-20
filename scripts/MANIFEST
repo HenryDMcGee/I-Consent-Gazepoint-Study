@@ -1,0 +1,27 @@
+The main Python scripts that may need to be altered are:
+
+csv2raw.py:
+  - this converts the .csv files to .raw files
+  - this is also a good opportunity to settle on file naming conventions, e.g.,
+    p1_cond1_stim1_etc_etc.raw
+    where you encode subj ids and conditions, etc. into the file name
+
+graph.py:
+  - this processes each .raw file and visualizes whatever is ucommented
+    in the visualization
+  - this also takes into account the file naming scheme above
+
+filter.py:
+  - this is very similar to graph.py and will probably require similar
+    changes, e.g., taking care about file nameing scheme used above
+  - this will convert .raw files into .dat files, collecting for each
+    file the number of fixations per AOI for example
+
+collate-*.py:
+  - these scripts assemble all relevant data/*.dat files into .csv
+    fils for further processing by R
+  - again, the file naming scheme will be important here
+
+*.R:
+  - R files will need to be tailored according to your experimental
+    design and the output of your collate-*.py scripts

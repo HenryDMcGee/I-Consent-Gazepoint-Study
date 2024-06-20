@@ -1,0 +1,103 @@
+
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(RColorBrewer)
+> library(colorspace)
+> library(sciplot)
+> library(psych)
+> library(car)
+> library(reshape)
+> library(plyr)
+> library(ggplot2)
+> 
+> #subj,stimulus,timestamp,x,y,duration,prev_sacc_amplitude,aoi_label
+> df = read.table("fxtn-aois.csv",sep=",",header=TRUE)
+> 
+> df$subj <- factor(df$subj)
+> df$stimulus <- factor(df$stimulus)
+> df$aoi_label <- factor(df$aoi_label)
+> 
+> attach(df)
+> 
+> fit_type1 <- aov(duration ~ (stimulus * aoi_label) + Error(subj/(stimulus)))
+> #fit_type1 <- aov(duration ~ (stimulus * aoi_label))
+> summary(fit_type1)
+
+Error: subj
+         Df Sum Sq Mean Sq
+stimulus  2  1.115  0.5574
+
+Error: subj:stimulus
+          Df  Sum Sq Mean Sq
+stimulus   2 0.02139 0.01069
+aoi_label  4 0.19344 0.04836
+
+Error: Within
+           Df Sum Sq Mean Sq F value Pr(>F)
+aoi_label   9  0.112 0.01243   0.697  0.712
+Residuals 989 17.642 0.01784               
+> #print(model.tables(fit_type1,"means"),digits=3)
+> pairwise.t.test(duration, stimulus, paired=FALSE, p.adjust="bonf")
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  duration and stimulus 
+
+      page1 page2
+page2 1     -    
+page3 1     1    
+
+P value adjustment method: bonferroni 
+> describeBy(x=duration,group=stimulus)
+
+ Descriptive statistics by group 
+group: page1
+   vars   n mean   sd median trimmed mad  min  max range skew kurtosis   se
+X1    1 601 0.14 0.13    0.1    0.12 0.1 0.01 1.03  1.02 2.34     8.97 0.01
+------------------------------------------------------------ 
+group: page2
+   vars   n mean   sd median trimmed  mad  min  max range skew kurtosis   se
+X1    1 288 0.14 0.13   0.12    0.12 0.12 0.01 0.85  0.84 2.05      5.7 0.01
+------------------------------------------------------------ 
+group: page3
+   vars   n mean   sd median trimmed mad  min  max range skew kurtosis   se
+X1    1 118 0.15 0.18   0.11    0.11 0.1 0.01 1.26  1.25 3.67    16.48 0.02
+> 
+> pdf.options(family="NimbusSan",useDingbats=FALSE)
+> plotName = "./duration-CI.pdf"
+> pdf(plotName)
+> bargraph.CI(stimulus,
++             duration,
++             group=aoi_label,
++             data=df,
++             split = FALSE,
++             col = "black",
++             angle = c(45,45),
++             density = c(0,20),
++             lc = FALSE,
++             uc = TRUE,
++             legend = TRUE,
++ #           ylim = c(0,40),
++             xlab = "Stimulus",
++             ylab = "Fixation Duration (sec; with SE)",
++             cex.lab = 1.2,
++             names.arg = c("painting","puntos"),
++             cex.names = 1.1,
++             main = "Fixation Duration in AOIs vs. Image Type"
++ )
