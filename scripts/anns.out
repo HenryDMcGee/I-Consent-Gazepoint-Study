@@ -1,0 +1,118 @@
+
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(sciplot)
+> library(ez)
+> library(psych)
+> library(reshape)
+> library(ggplot2)
+> 
+> #subj,cond,stim,ANN
+> df <- read.csv("anns.csv") # open data
+> 
+> mdf <- melt(df, id=c("subj","cond","stim"))
+> stimmeans <- cast(mdf, stim~variable, mean)
+> 
+> #subj,cond,stim,ann
+> # calculate anova
+> #ezANOVA(data=df, dv=ann, wid=subj, within=cond, type=3)
+> df$subj <- factor(df$subj)
+> df$cond <- factor(df$cond)
+> df$stim <- factor(df$stim)
+> attach(df)
+> #summary(aov(ann ~ (cond * stim) + Error(subj/cond), df))
+> #summary(aov(nni ~ (cond * stim) + Error(subj/cond), df))
+> # if there's no condition, just use simple one-way ANOVA
+> summary(aov(ann ~ stim, df))
+            Df Sum Sq Mean Sq F value Pr(>F)
+stim         2  30.40   15.20   1.115  0.388
+Residuals    6  81.82   13.64               
+> summary(aov(nni ~ stim, df))
+            Df  Sum Sq  Mean Sq F value Pr(>F)
+stim         2 0.01988 0.009938   0.526  0.616
+Residuals    6 0.11339 0.018898               
+> detach(df)
+> 
+> #pairwise.t.test(df$ann, df$cond, p.adj="bonferroni")
+> #describeBy(df$ann, group=df$cond)
+> describeBy(df$ann, group=df$stim)
+
+ Descriptive statistics by group 
+group: page1-811x1050
+   vars n   mean   sd median trimmed  mad    min   max range skew kurtosis   se
+X1    1 3 -11.69 4.56 -10.13  -11.69 2.98 -16.82 -8.12   8.7 -0.3    -2.33 2.63
+------------------------------------------------------------ 
+group: page2-811x1050
+   vars n  mean   sd median trimmed  mad   min   max range skew kurtosis   se
+X1    1 3 -9.11 0.47  -9.36   -9.11 0.08 -9.41 -8.57  0.84 0.38    -2.33 0.27
+------------------------------------------------------------ 
+group: page3-811x1050
+   vars n  mean   sd median trimmed  mad    min   max range skew kurtosis   se
+X1    1 3 -7.21 4.46  -7.43   -7.21 6.11 -11.55 -2.63  8.92 0.05    -2.33 2.58
+> 
+> #pairwise.t.test(df$nni, df$cond, p.adj="bonferroni")
+> #describeBy(df$nni, group=df$cond)
+> describeBy(df$nni, group=df$stim)
+
+ Descriptive statistics by group 
+group: page1-811x1050
+   vars n mean   sd median trimmed mad  min  max range  skew kurtosis   se
+X1    1 3  0.5 0.14   0.58     0.5   0 0.33 0.58  0.25 -0.38    -2.33 0.08
+------------------------------------------------------------ 
+group: page2-811x1050
+   vars n mean   sd median trimmed mad  min  max range skew kurtosis   se
+X1    1 3  0.5 0.08   0.49     0.5 0.1 0.43 0.58  0.15 0.09    -2.33 0.04
+------------------------------------------------------------ 
+group: page3-811x1050
+   vars n mean   sd median trimmed mad  min  max range skew kurtosis  se
+X1    1 3  0.4 0.17   0.37     0.4 0.2 0.24 0.59  0.35 0.14    -2.33 0.1
+> 
+> plotName = "./nni-stim.pdf"
+> pdf(plotName,family="NimbusSan",useDingbats=FALSE)
+> bargraph.CI(stim, nni, group = NULL, data = df,
++             split = FALSE,
++             col = c("#f0f0f0","#bdbdbd","#636363"),
++             angle = c(45,45,45),
++             density = c(60,60,60),
++             lc = TRUE,
++             uc = TRUE,
++             legend = FALSE,
++             ncol = 1,
++             leg.lab = NULL,
++             x.leg = 6.2,
++             y.leg = 2.4,
++             cex.leg = 1.2,
++ #           ylim = c(0,1.0),
++             xlab = "Stimulus",
++             ylab = "Mean NNI z-score",
++             cex.lab = 1.3,
++             cex.names = 1.3,
++             main = "NNI z-score vs. Stimulus"
++ )
+> dev.off()
+null device 
+          1 
+> embedFonts(plotName, "pdfwrite", outfile = plotName,
++   fontpaths =
++   c("/sw/share/texmf-dist/fonts/type1/urw/helvetic",
++     "/usr/share/texmf/fonts/type1/urw/helvetic",
++     "/usr/local/teTeX/share/texmf-dist/fonts/type1/urw/helvetic",
++     "/opt/local/share/texmf-texlive/fonts/type1/urw/helvetic",
++     "/usr/share/texmf-texlive/fonts/type1/urw/helvetic",
++     "/usr/local/texlive/texmf-local/fonts/type1/urw/helvetic"))
